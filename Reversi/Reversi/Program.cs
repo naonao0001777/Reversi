@@ -15,8 +15,19 @@ namespace Reversi
             COLOR_NONE = -1,
             COLOR_BLACK = 0,
             COLOR_WHITE = 1
-        };
-        
+        }
+        enum Direction
+        {
+            UP,
+            UP_RIGHT,
+            RIGHT,
+            DOWN_RIGHT,
+            DOWN,
+            DOWN_LEFT,
+            LEFT,
+            UP_LEFT,
+            DIRECTION_MAX
+        }
         static void Main(string[] args)
         {
             int cursorX = 0;
@@ -30,6 +41,18 @@ namespace Reversi
             ColorNames[0] = new char[] { '黒' };
             ColorNames[1] = new char[] { '白' };
 
+            int[][] direction = new int[8][];
+            direction[(int)Direction.UP] = new int[] { -1,0}; // UP
+            direction[(int)Direction.UP_RIGHT] = new int[] { -1, 1 }; // UP_RIGHT
+            direction[(int)Direction.RIGHT] = new int[] { 0, 1 }; // RIGHT
+            direction[(int)Direction.DOWN_RIGHT] = new int[] { 1, 1 }; // DOWN_RIGHT
+            direction[(int)Direction.DOWN] = new int[] { 1, 0 }; // DOWN
+            direction[(int)Direction.DOWN_LEFT] = new int[] { 1, -1 }; // DOWN_LEFT
+            direction[(int)Direction.LEFT] = new int[] { 0, -1 }; // LEFT
+            direction[(int)Direction.UP_LEFT] = new int[] { -1, -1 }; // UP_LEFT
+
+            Dictionary<int, List<int>> aa = new Dictionary<int, List<int>>();
+            
             bool CantPut = false;
             // セル画面を初期化
             DrawingCells();
@@ -49,6 +72,10 @@ namespace Reversi
                 if (cells[_cursorY,_cursorX] != (int)Color.COLOR_NONE)
                 {
                     return false;
+                }
+                for (int i = 0;i < (int)Direction.DIRECTION_MAX;i++)
+                {
+                    int x = cursorX, y = cursorY;
                 }
                 return true;
             }
