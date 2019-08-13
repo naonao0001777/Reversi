@@ -32,7 +32,7 @@ namespace Reversi
         {
             int cursorX = 0;
             int cursorY = 0;
-            
+
             int[,] cells = new int[BOARD_HEIGHT, BOARD_WIDTH];
 
             int turn = (int)Color.COLOR_BLACK;
@@ -41,8 +41,10 @@ namespace Reversi
             ColorNames[0] = new char[] { '黒' };
             ColorNames[1] = new char[] { '白' };
 
-            //int[,] direction = new int[2,2];
-            //direction[-1, 0] = (int)Direction.UP; // UP
+            int[,] direction = new int [BOARD_HEIGHT,BOARD_WIDTH];//[-1, 0]
+            direction[-1,0] = (int)Direction.UP ; // UP
+
+
             //direction[-1, 1] = (int)Direction.UP_RIGHT; // UP_RIGHT
             //direction[0, 1] = (int)Direction.RIGHT;  // RIGHT
             //direction[1, 1] = (int)Direction.DOWN_RIGHT; // DOWN_RIGHT
@@ -50,8 +52,11 @@ namespace Reversi
             //direction[1, -1] = (int)Direction.DOWN_LEFT; // DOWN_LEFT
             //direction[0, -1] = (int)Direction.LEFT; // LEFT
             //direction[-1, -1] = (int)Direction.UP_LEFT; // UP_LEFT
-            
+
+
+            // 石を置けないフラグ
             bool CantPut = false;
+
             // セル画面を初期化
             DrawingCells();
 
@@ -79,16 +84,20 @@ namespace Reversi
                     switch (i)
                     {
                         case (int)Direction.UP:
-                            x += 0;
-                            y -= 1;
-                            
-                                break;
-                        
+                            if (cells[y-1, x] == (turn ^ 1))
+                            {
+                                for (int n = 2; n < BOARD_HEIGHT;n++)
+                                {
+                                    if(cells[y-n,x] == turn&&y>-1)
+                                    {
+                                        cells[y-n, x] = turn;
+                                    }
+                                }
+                            }break;
+                        default:
+                            break;
                     }
-                    if (cells[y,x] == (turn^1))
-                    {
-                        
-                    }
+                   
                 }
                 return true;
             }
