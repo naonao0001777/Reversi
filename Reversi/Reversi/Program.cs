@@ -41,17 +41,15 @@ namespace Reversi
             ColorNames[0] = new char[] { '黒' };
             ColorNames[1] = new char[] { '白' };
 
-            int[][] direction = new int[8][];
-            direction[(int)Direction.UP] = new int[] { -1,0}; // UP
-            direction[(int)Direction.UP_RIGHT] = new int[] { -1, 1 }; // UP_RIGHT
-            direction[(int)Direction.RIGHT] = new int[] { 0, 1 }; // RIGHT
-            direction[(int)Direction.DOWN_RIGHT] = new int[] { 1, 1 }; // DOWN_RIGHT
-            direction[(int)Direction.DOWN] = new int[] { 1, 0 }; // DOWN
-            direction[(int)Direction.DOWN_LEFT] = new int[] { 1, -1 }; // DOWN_LEFT
-            direction[(int)Direction.LEFT] = new int[] { 0, -1 }; // LEFT
-            direction[(int)Direction.UP_LEFT] = new int[] { -1, -1 }; // UP_LEFT
-
-            Dictionary<int, List<int>> aa = new Dictionary<int, List<int>>();
+            //int[,] direction = new int[2,2];
+            //direction[-1, 0] = (int)Direction.UP; // UP
+            //direction[-1, 1] = (int)Direction.UP_RIGHT; // UP_RIGHT
+            //direction[0, 1] = (int)Direction.RIGHT;  // RIGHT
+            //direction[1, 1] = (int)Direction.DOWN_RIGHT; // DOWN_RIGHT
+            //direction[1, 0] = (int)Direction.DOWN; // DOWN
+            //direction[1, -1] = (int)Direction.DOWN_LEFT; // DOWN_LEFT
+            //direction[0, -1] = (int)Direction.LEFT; // LEFT
+            //direction[-1, -1] = (int)Direction.UP_LEFT; // UP_LEFT
             
             bool CantPut = false;
             // セル画面を初期化
@@ -73,9 +71,24 @@ namespace Reversi
                 {
                     return false;
                 }
+
                 for (int i = 0;i < (int)Direction.DIRECTION_MAX;i++)
                 {
                     int x = cursorX, y = cursorY;
+
+                    switch (i)
+                    {
+                        case (int)Direction.UP:
+                            x += 0;
+                            y -= 1;
+                            
+                                break;
+                        
+                    }
+                    if (cells[y,x] == (turn^1))
+                    {
+                        
+                    }
                 }
                 return true;
             }
@@ -124,7 +137,7 @@ namespace Reversi
                         }
                         else
                         {
-                            switch (cells[y,x])
+                            switch (cells[y, x])
                             {
                                 case (int)Color.COLOR_NONE:
                                     Console.Write("・");
