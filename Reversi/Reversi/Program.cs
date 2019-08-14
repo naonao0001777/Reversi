@@ -11,7 +11,8 @@ namespace Reversi
         const int BOARD_WIDTH = 8;
         const int BOARD_HEIGHT = 8;
 
-        enum Color {
+        enum Color
+        {
             COLOR_NONE = -1,
             COLOR_BLACK = 0,
             COLOR_WHITE = 1
@@ -56,34 +57,37 @@ namespace Reversi
 
             // y軸、x軸のベクトル値を定義
             int[][] vector = new int[2][];
-            vector[0] = new int[] {0,1,1,1,0,-1,-1,-1}; // x軸
-            vector[1] = new int[] {-1,-1,0,1,1,1,0,-1}; // y軸
-            
+            vector[0] = new int[] { 0, 1, 1, 1, 0, -1, -1, -1 }; // x軸
+            vector[1] = new int[] { -1, -1, 0, 1, 1, 1, 0, -1 }; // y軸
+
 
             // 石を置けないフラグ
             bool CantPut = false;
 
+            // チェック処理フラグ
+            bool CheckAll = false;
+
             // セル画面を初期化
             DrawingCells();
 
-            while (true) 
+            while (true)
             {
                 // 画面をクリア
                 Console.Clear();
 
                 // 盤面を描画
-                DrawingBoard();
+                DrawingBoard(CheckAll);
             }
 
             // 配置可否チェック処理
-            bool CheckCanPut(int _turn, int _cursorX, int _cursorY)
+            bool CheckCanPut(int _turn, int _cursorX, int _cursorY, bool checkCanPutAllFlug)
             {
                 bool canPut = false;
 
                 int x = _cursorX;
                 int y = _cursorY;
 
-                if (cells[y,x] != (int)Color.COLOR_NONE)
+                if (cells[y, x] != (int)Color.COLOR_NONE)
                 {
                     return false;
                 }
@@ -91,7 +95,7 @@ namespace Reversi
                 // 全方向のベクトルをチェック
                 for (int i = 0; i < (int)Direction.DIRECTION_MAX; i++)
                 {
-                    
+
                     // x,yを初期化
                     x = _cursorX;
                     y = _cursorY;
@@ -108,11 +112,11 @@ namespace Reversi
                     else if (cells[y, x] == (_turn ^ 1))
                     {
                         // 相手の石が置いている方向をチェック
-                        while(true)
+                        while (true)
                         {
                             x += vector[0][i];
                             y += vector[1][i];
-                            
+
                             // 味方の石が置いている場合はフラグを立ててループを抜ける
                             if (x < 0 || y < 0 || x >= BOARD_WIDTH || y >= BOARD_HEIGHT)
                             {
@@ -121,11 +125,11 @@ namespace Reversi
                             else if (cells[y, x] == _turn)
                             {
                                 // 自分のカーソル位置まで石を返す
-                                while(!(x == _cursorX && y == _cursorY))
+                                while (!checkCanPutAllFlug && !(x == _cursorX && y == _cursorY))
                                 {
                                     x -= vector[0][i];
                                     y -= vector[1][i];
-                                    
+
                                     cells[y, x] = _turn;
                                 }
 
@@ -141,8 +145,27 @@ namespace Reversi
                 {
                     return false;
                 }
-                
+
                 return true;
+            }
+
+            // 置けるかどうかをすべてをチェック
+            bool CheckCanPutAll(int _turn)
+            {
+                for (int y = 0; y < BOARD_HEIGHT; y++)
+                {
+                    for (int x = 0; x < BOARD_WIDTH; x++)
+                    {
+                        if (cells[y, x] == (int)Color.COLOR_NONE)
+                        {
+                            if (CheckCanPut(_turn, x, y, true))
+                            {
+                                return true;
+                            }
+                        }
+                    }
+                }
+                return false;
             }
 
             // 盤面を初期化する処理
@@ -175,9 +198,9 @@ namespace Reversi
                     }
                 }
             }
-
+           
             // 盤面を描画する処理
-            void DrawingBoard()
+            void DrawingBoard(bool _checkAll)
             {
                 for (int y = 0; y < BOARD_HEIGHT; y++)
                 {
@@ -206,7 +229,12 @@ namespace Reversi
                     Console.Write("\r\n");
                 }
 
-                if (CantPut)
+                if (_checkAll)
+                {
+                    Console.Write(ColorNames[turn]);
+                    Console.Write("はどこも置けません");
+                }
+                else if (CantPut)
                 {
                     Console.Write("そこは置けません");
                 }
@@ -215,13 +243,13 @@ namespace Reversi
                     Console.Write(ColorNames[turn]);
                     Console.Write("のターン");
                 }
-
+                
                 // カーソル移動
-                OperatingCursor(cursorX,cursorY,turn);
+                OperatingCursor(cursorX, cursorY, turn, _checkAll);
             }
 
             //　カーソル移動に関する処理
-            void OperatingCursor(int _cursorX,int _cursorY,int _turn)
+            void OperatingCursor(int _cursorX, int _cursorY, int _turn, bool _checkAll)
             {
                 ConsoleKeyInfo key = Console.ReadKey(true);
                 string cursorKey = key.Key.ToString();
@@ -243,27 +271,41 @@ namespace Reversi
                         cursorX++;
                         break;
                     default:
-                        if (!(CheckCanPut(_turn, _cursorX, _cursorY)))
+                        // 場所に置けなかった場合
+                        if (!CheckCanPut(_turn, _cursorX, _cursorY, false))
                         {
+                            // 盤面のどこも置けなかった場合
+                            if (!CheckCanPutAll(_turn))
+                            {
+                                _checkAll = true;
+                                turn ^= 1;
+
+                                break;
+                            }
+
                             CantPut = true;
                             break;
                         }
-                        cells[cursorY,cursorX] = _turn;
+                        // 置ける場合は味方を置く
+                        cells[cursorY, cursorX] = _turn;
                         turn ^= 1;
                         break;
                 }
 
                 // カーソルが盤外に出た場合の処理
-                if (cursorX == -1)
+                if (cursorX < 0)
                 {
-                    cursorX = BOARD_WIDTH-1;
-                }else if (cursorY == -1)
+                    cursorX = BOARD_WIDTH - 1;
+                }
+                else if (cursorY < 0)
                 {
-                    cursorY = BOARD_HEIGHT-1;
-                }else if (cursorX == BOARD_WIDTH)
+                    cursorY = BOARD_HEIGHT - 1;
+                }
+                else if (cursorX == BOARD_WIDTH)
                 {
                     cursorX %= BOARD_WIDTH;
-                }else if (cursorY == BOARD_HEIGHT)
+                }
+                else if (cursorY == BOARD_HEIGHT)
                 {
                     cursorY %= BOARD_HEIGHT;
                 }
