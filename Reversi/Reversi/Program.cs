@@ -91,6 +91,7 @@ namespace Reversi
                 // 全方向のベクトルをチェック
                 for (int i = 0; i < (int)Direction.DIRECTION_MAX; i++)
                 {
+                    
                     // x,yを初期化
                     x = _cursorX;
                     y = _cursorY;
@@ -111,7 +112,7 @@ namespace Reversi
                         {
                             x += vector[0][i];
                             y += vector[1][i];
-
+                            
                             // 味方の石が置いている場合はフラグを立ててループを抜ける
                             if (x < 0 || y < 0 || x >= BOARD_WIDTH || y >= BOARD_HEIGHT)
                             {
@@ -119,25 +120,28 @@ namespace Reversi
                             }
                             else if (cells[y, x] == _turn)
                             {
+                                // 自分のカーソル位置まで石を返す
+                                while(!(x == _cursorX && y == _cursorY))
+                                {
+                                    x -= vector[0][i];
+                                    y -= vector[1][i];
+                                    
+                                    cells[y, x] = _turn;
+                                }
+
                                 canPut = true;
                                 break;
                             }
                         }
                     }
-
-                    // 石が置ける場合はループを抜ける処理をする
-                    if (canPut)
-                    {
-                        break;
-                    }
                 }
 
-                // 全方向をチェックした後のフラグがあるか？
+                // 全方向をチェックした後の可否フラグがfalseなら、falseを返す
                 if (!canPut)
                 {
                     return false;
                 }
-
+                
                 return true;
             }
 
