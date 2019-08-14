@@ -41,18 +41,24 @@ namespace Reversi
             ColorNames[0] = new char[] { '黒' };
             ColorNames[1] = new char[] { '白' };
 
-            int[,] direction = new int [BOARD_HEIGHT,BOARD_WIDTH];//[-1, 0]
-            direction[-1,0] = (int)Direction.UP ; // UP
+            // x軸、y軸のベクトルをリスト型のDictionary<y,x>関数で定義
+            List<Dictionary<int, int>> Vector = new List<Dictionary<int, int>>()
+            {
+                new Dictionary<int,int>(){ { -1, 0 } }, // UP
+                new Dictionary<int,int>(){ { -1, 1 } }, // UP_RIGHT
+                new Dictionary<int,int>(){ { 0, 1 } },  // RIGHT
+                new Dictionary<int,int>(){ { 1, 1 } },  // DOWN_RIGHT
+                new Dictionary<int,int>(){ { 1, 0 } },  // DOWN
+                new Dictionary<int,int>(){ { 1, -1 } }, // DOWN_LEFT
+                new Dictionary<int,int>(){ { 0, -1 } }, // LEFT
+                new Dictionary<int,int>(){ { -1, -1 } } // UP_LEFT
+            };
 
-
-            //direction[-1, 1] = (int)Direction.UP_RIGHT; // UP_RIGHT
-            //direction[0, 1] = (int)Direction.RIGHT;  // RIGHT
-            //direction[1, 1] = (int)Direction.DOWN_RIGHT; // DOWN_RIGHT
-            //direction[1, 0] = (int)Direction.DOWN; // DOWN
-            //direction[1, -1] = (int)Direction.DOWN_LEFT; // DOWN_LEFT
-            //direction[0, -1] = (int)Direction.LEFT; // LEFT
-            //direction[-1, -1] = (int)Direction.UP_LEFT; // UP_LEFT
-
+            // y軸、x軸のベクトル値を定義
+            int[][] vector = new int[2][];
+            vector[0] = new int[] {0,1,1,1,0,-1,-1,-1}; // x軸
+            vector[1] = new int[] {-1,-1,0,1,1,1,0,-1}; // y軸
+            
 
             // 石を置けないフラグ
             bool CantPut = false;
@@ -60,7 +66,7 @@ namespace Reversi
             // セル画面を初期化
             DrawingCells();
 
-            while (true)
+            while (true) 
             {
                 // 画面をクリア
                 Console.Clear();
@@ -72,33 +78,66 @@ namespace Reversi
             // 配置可否チェック処理
             bool CheckCanPut(int _turn, int _cursorX, int _cursorY)
             {
-                if (cells[_cursorY,_cursorX] != (int)Color.COLOR_NONE)
+                bool canPut = false;
+
+                int x = _cursorX;
+                int y = _cursorY;
+
+                if (cells[y,x] != (int)Color.COLOR_NONE)
                 {
                     return false;
                 }
 
-                for (int i = 0;i < (int)Direction.DIRECTION_MAX;i++)
+                // 全方向のベクトルをチェック
+                for (int i = 0; i < (int)Direction.DIRECTION_MAX; i++)
                 {
-                    int x = cursorX, y = cursorY;
+                    // x,yを初期化
+                    x = _cursorX;
+                    y = _cursorY;
 
-                    switch (i)
+                    // x,y軸方向を加算
+                    x += vector[0][i];
+                    y += vector[1][i];
+
+                    // i方向ベクトルに相手の石が置いていた場合
+                    if (x < 0 || y < 0 || x >= BOARD_WIDTH || y >= BOARD_HEIGHT)
                     {
-                        case (int)Direction.UP:
-                            if (cells[y-1, x] == (turn ^ 1))
-                            {
-                                for (int n = 2; n < BOARD_HEIGHT;n++)
-                                {
-                                    if(cells[y-n,x] == turn&&y>-1)
-                                    {
-                                        cells[y-n, x] = turn;
-                                    }
-                                }
-                            }break;
-                        default:
-                            break;
+                        continue;
                     }
-                   
+                    else if (cells[y, x] == (_turn ^ 1))
+                    {
+                        // 相手の石が置いている方向をチェック
+                        while(true)
+                        {
+                            x += vector[0][i];
+                            y += vector[1][i];
+
+                            // 味方の石が置いている場合はフラグを立ててループを抜ける
+                            if (x < 0 || y < 0 || x >= BOARD_WIDTH || y >= BOARD_HEIGHT)
+                            {
+                                break;
+                            }
+                            else if (cells[y, x] == _turn)
+                            {
+                                canPut = true;
+                                break;
+                            }
+                        }
+                    }
+
+                    // 石が置ける場合はループを抜ける処理をする
+                    if (canPut)
+                    {
+                        break;
+                    }
                 }
+
+                // 全方向をチェックした後のフラグがあるか？
+                if (!canPut)
+                {
+                    return false;
+                }
+
                 return true;
             }
 
@@ -162,6 +201,7 @@ namespace Reversi
                     }
                     Console.Write("\r\n");
                 }
+
                 if (CantPut)
                 {
                     Console.Write("そこは置けません");
