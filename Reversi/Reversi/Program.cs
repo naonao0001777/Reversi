@@ -67,6 +67,9 @@ namespace Reversi
             // チェック処理フラグ
             bool CheckAll = false;
 
+            // ゲームセットフラグ
+            bool GameSet = false;
+
             // セル画面を初期化
             DrawingCells();
 
@@ -76,7 +79,7 @@ namespace Reversi
                 Console.Clear();
 
                 // 盤面を描画
-                DrawingBoard(CheckAll);
+                DrawingBoard();
             }
 
             // 配置可否チェック処理
@@ -200,7 +203,7 @@ namespace Reversi
             }
            
             // 盤面を描画する処理
-            void DrawingBoard(bool _checkAll)
+            void DrawingBoard()
             {
                 for (int y = 0; y < BOARD_HEIGHT; y++)
                 {
@@ -229,10 +232,51 @@ namespace Reversi
                     Console.Write("\r\n");
                 }
 
-                if (_checkAll)
+                if (GameSet)
                 {
-                    Console.Write(ColorNames[turn]);
+                    Console.WriteLine("ゲームセット");
+                    Console.ReadKey();
+
+                    int countBlack = 0;
+                    int countWhite = 0;
+
+                    for (int y = 0; y < BOARD_HEIGHT; y++)
+                    {
+                        for (int x = 0; x < BOARD_WIDTH; x++)
+                        {
+                            if (cells[y,x] == (int)Color.COLOR_BLACK)
+                            {
+                                countBlack++;
+                            }
+                            else if (cells[y, x] == (int)Color.COLOR_WHITE)
+                            {
+                                countWhite++;
+                            }
+                        }
+                    }
+                    Console.WriteLine("黒の数：" + countBlack);
+                    Console.WriteLine("白の数：" + countWhite);
+                    Console.ReadKey();
+                    if (countBlack > countWhite)
+                    {
+                        Console.Write("黒の勝ち");
+                    }
+                    else if (countWhite > countBlack)
+                    {
+                        Console.Write("白の勝ち");
+                    }
+                    else
+                    {
+                        Console.Write("引き分け");
+                    }
+                    Console.ReadKey();
+                    Environment.Exit(0);
+                }
+                else if (CheckAll)
+                {
+                    Console.Write(ColorNames[turn ^ 1]);
                     Console.Write("はどこも置けません");
+                    CheckAll = false;
                 }
                 else if (CantPut)
                 {
@@ -245,11 +289,11 @@ namespace Reversi
                 }
                 
                 // カーソル移動
-                OperatingCursor(cursorX, cursorY, turn, _checkAll);
+                OperatingCursor(cursorX, cursorY, turn);
             }
 
             //　カーソル移動に関する処理
-            void OperatingCursor(int _cursorX, int _cursorY, int _turn, bool _checkAll)
+            void OperatingCursor(int _cursorX, int _cursorY, int _turn)
             {
                 ConsoleKeyInfo key = Console.ReadKey(true);
                 string cursorKey = key.Key.ToString();
@@ -274,15 +318,22 @@ namespace Reversi
                         // 場所に置けなかった場合
                         if (!CheckCanPut(_turn, _cursorX, _cursorY, false))
                         {
-                            // 盤面のどこも置けなかった場合
+                            // 両者が盤面のどこも置けなかった場合
+                            if (!CheckCanPutAll((int)Color.COLOR_BLACK) && !CheckCanPutAll((int)Color.COLOR_WHITE))
+                            {
+                                CheckAll = true;
+                                GameSet = true;
+                                
+                                break;
+                            }
+                            // 味方が盤面のどこも置けなかった場合
                             if (!CheckCanPutAll(_turn))
                             {
-                                _checkAll = true;
+                                CheckAll = true;
                                 turn ^= 1;
 
                                 break;
                             }
-
                             CantPut = true;
                             break;
                         }
