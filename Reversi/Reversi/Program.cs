@@ -6,18 +6,18 @@ using System.Threading.Tasks;
 
 namespace Reversi
 {
-    class Program
+    public class Program
     {
-        const int BOARD_WIDTH = 8;
-        const int BOARD_HEIGHT = 8;
+        public const int BOARD_WIDTH = 8;
+        public const int BOARD_HEIGHT = 8;
 
-        enum Color
+        public enum Color
         {
             COLOR_NONE = -1,
             COLOR_BLACK = 0,
             COLOR_WHITE = 1
         }
-        enum Direction
+        public enum Direction
         {
             UP,
             UP_RIGHT,
@@ -29,7 +29,8 @@ namespace Reversi
             UP_LEFT,
             DIRECTION_MAX
         }
-        static void Main(string[] args)
+
+        public static void Main(string[] args)
         {
             int cursorX = 0;
             int cursorY = 0;
@@ -235,7 +236,7 @@ namespace Reversi
                 // ゲームセットフラグが有効化されている場合は、計算処理
                 if (GameSet)
                 {
-                    Console.WriteLine("ゲームセット");
+                    Console.Write("ゲームセット");
                     Console.ReadKey(true);
                     Console.Write("\r\n");
 
