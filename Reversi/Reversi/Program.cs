@@ -232,14 +232,17 @@ namespace Reversi
                     Console.Write("\r\n");
                 }
 
+                // ゲームセットフラグが有効化されている場合は、計算処理
                 if (GameSet)
                 {
                     Console.WriteLine("ゲームセット");
-                    Console.ReadKey();
+                    Console.ReadKey(true);
+                    Console.Write("\r\n");
 
                     int countBlack = 0;
                     int countWhite = 0;
 
+                    // 数計算をする処理
                     for (int y = 0; y < BOARD_HEIGHT; y++)
                     {
                         for (int x = 0; x < BOARD_WIDTH; x++)
@@ -254,27 +257,19 @@ namespace Reversi
                             }
                         }
                     }
-                    Console.WriteLine("黒の数：" + countBlack);
-                    Console.WriteLine("白の数：" + countWhite);
-                    Console.ReadKey();
-                    if (countBlack > countWhite)
-                    {
-                        Console.Write("黒の勝ち");
-                    }
-                    else if (countWhite > countBlack)
-                    {
-                        Console.Write("白の勝ち");
-                    }
-                    else
-                    {
-                        Console.Write("引き分け");
-                    }
-                    Console.ReadKey();
-                    Environment.Exit(0);
+
+                    Console.WriteLine(ColorNames[(int)Color.COLOR_BLACK][0] + "の数：" + countBlack);
+                    Console.WriteLine(ColorNames[(int)Color.COLOR_WHITE][0] + "の数：" + countWhite);
+                    Console.ReadKey(true);
+                    Console.Write("\r\n");
+
+                    // 勝敗判定関数の呼び出し
+                    JudgeGameWinner(countBlack,countWhite);
+                    
                 }
                 else if (CheckAll)
                 {
-                    Console.Write(ColorNames[turn ^ 1]);
+                    Console.Write(ColorNames[turn ^ 1][0]);
                     Console.Write("はどこも置けません");
                     CheckAll = false;
                 }
@@ -284,7 +279,7 @@ namespace Reversi
                 }
                 else
                 {
-                    Console.Write(ColorNames[turn]);
+                    Console.Write(ColorNames[turn][0]);
                     Console.Write("のターン");
                 }
                 
@@ -360,7 +355,26 @@ namespace Reversi
                 {
                     cursorY %= BOARD_HEIGHT;
                 }
+            }
 
+            // 勝敗判定に関しての処理
+            void JudgeGameWinner(int _countBlack, int _countWhite)
+            {
+                if (_countBlack > _countWhite)
+                {
+                    Console.Write("黒の勝ち");
+                }
+                else if (_countWhite > _countBlack)
+                {
+                    Console.Write("白の勝ち");
+                }
+                else
+                {
+                    Console.Write("引き分け");
+                }
+
+                Console.ReadKey();
+                Environment.Exit(0);
             }
         }
     }
