@@ -1,4 +1,4 @@
-# リバーシ
+# オセロ
 The one of the most favorite boardgame, it is said Reversi. Game you and CPU it is enemy on board tactically.
 
 ## TL;DR 
