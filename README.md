@@ -9,8 +9,8 @@ You can try to game reversi but only you can do, not online.
 * You can put your stone by press any key.
 
 ## 必須要件  
-* VisualStudio installed
 * .NET Runtime
+* Releaseから直接exeダウンロードは可能ですが、セキュリティでロックされることがあるため、zipでソースコードを取得し、実行していただく方がより好ましいです。
 
 ## 作者
 nao
