@@ -3,6 +3,7 @@ The one of the most favorite boardgame, it is said Reversi. Game you and CPU it 
 
 ## TL;DR 
 You can try to game reversi but only you can do, not online.
+![reversi](https://user-images.githubusercontent.com/46675984/106393466-9411b000-643a-11eb-9141-2c02642a6cb3.gif)
 
 ## 遊び方
 * You can move `@` by press the key `↑W` `←A` `↓S` `→D`.
